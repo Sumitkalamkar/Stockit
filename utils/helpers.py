@@ -1,16 +1,16 @@
 import os
 from dotenv import load_dotenv
-import google.genai as genai
+import google.generativeai as genai
 
 # Load environment variables from .env
 load_dotenv()
 
-# Initialize the Gemini client
+# Configure Gemini with API key
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY not found in environment variables")
-client = genai.Client(api_key=api_key)
 
+genai.configure(api_key=api_key)
 
 def get_investment_advice(predictions, stock_symbol):
     """
@@ -24,10 +24,7 @@ def get_investment_advice(predictions, stock_symbol):
     )
 
     try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
+        response = genai.GenerativeModel("gemini-2.5-flash").generate_content(prompt)
         return response.text.strip() if response.text else "No advice generated."
     except Exception as e:
         print("Error generating investment advice:", e)
